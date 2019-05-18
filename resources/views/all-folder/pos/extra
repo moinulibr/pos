@@ -1,0 +1,105 @@
+<div class="price_card text-center" style="margin-bottom:0px;">
+                                                <div class="table" style="border:1px solid gray;">
+                                                    <table class="table table-response">
+                                                        <thead class="bg-primary text-white">
+                                                            <tr>
+                                                                <th style="width:20%; color:white;font-size:12px;">P.Name</th>
+                                                                <th style="width:10%; color:white;font-size:12px;">Qty</th>
+                                                                <th style="width:20%; color:white;font-size:12px;">Unite Price</th>
+                                                                <th style="width:20%; color:white;font-size:12px;">Sub Price</th>
+                                                                <th style="width:3%; color:white;font-size:12px;">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="font-size:11px;text-align:left;">
+                                                            @php
+                                                                $cart = session()->has('cart') ? session()->get('cart')  : [];
+                                                                $total = array_sum(array_column($cart,'total_price'));
+                                                                $total_quantity = array_sum(array_column($cart,'quantity'));
+                                                                $vat = $total * 5 / 100 ;
+                                                            @endphp
+                                                            @if (empty($cart))
+                                                                <tr>
+                                                                    <td colspan="4" style="text-align:center; color:red;">
+                                                                        <span >
+                                                                            No Product Added in Your Cart!
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                @else
+                                                                @foreach ($cart as $key => $item)
+                                                                <tr>
+                                                                    <td>{{ $item['product_name'] }}</td>  
+                                                                    <td>
+                                                                        <form action="{{ route('add.to.cart') }}" method="post">
+                                                                            @csrf
+                                                                            <input value="{{ $item['quantity'] }}" name="qty" id="qty-{{ $item['product_id'] }}" class="clickToGet" type="text" style="width:77%;">
+                                                                            <input type="hidden" name="id" value="{{ $item['product_id'] }}" />
+                                                                            <button id="qty-submit-{{ $item['product_id'] }}" style="display:none;" type="submit"><i class="fa fa-check"></i></button>
+                                                                        </form>
+                                                                    </td>
+                                                                    <td><span class="clickToGet" id="price-{{ $item['product_id'] }}">{{ $item['unit_price'] }}</span></td>
+                                                                    <td><span id="set-{{ $item['product_id'] }}">{{ $item['total_price'] }}</span></td>
+                                                                    <td>
+                                                                        <form action="{{ route('remove.from.cart') }}" method="POST">
+                                                                            @csrf
+                                                                            <input type="hidden" name="product_id" value="{{ $item['product_id'] }}">
+                                                                            <button type="submit" style="margin-top:-3%;"><i class="fa fa-trash"></i></button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                            <tr>
+                                                                <td colspan="5" style="text-align:center; color:red;">
+                                                                    <a href="{{ route('show.cart') }}" class="btn btn-danger btn-sm pull-right" style="margin-bottom:-4%;">
+                                                                            Cart Clear
+                                                                    </a>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                              
+                                                <div class="bg-primary" style="color:white;margin-bottom:-3.1%;">
+                                                        <h5 style="color:white;padding-top:3%;">Quantity : {{ $total_quantity }} </h5>
+                                                        <h5 style="color:white;">Sub-Total : {{ $total }}</h5>
+                                                        <h5 style="color:white;">Vat : {{ $vat }} <small> (vat 5%)</small></h5>
+                                                        <h4 id="total" style="padding-bottom:3%;color:white;">Total Price :  {{ $total + $vat }} </h4>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end Pricing_card -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+$cart = [];
+$product = Product::findOrFail($product_id);
+$cart = session()->has('cart') ? session()->get('cart') : [];
+if(array_key_exists($product->id,$cart))
+{
+    echo "ase";
+   $cart[$product->id]['quantity']++;
+}
+else{
+    $cart[$product->id] = [
+        'product_id' => $product->name,
+        'product_name' => $product->name,
+        'quantity' => 1,
+        'unit_price' => $product->selling_price,
+    ];
+}
+
+
+session()->put('cart',$cart);
+echo $cart[$product->id]['quantity'];
+
+*/
